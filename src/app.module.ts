@@ -7,10 +7,12 @@ import { AuthModule } from './auth/auth.module';
 import { User } from './entities/user.entity';
 import { Todo } from './entities/todo.entity';
 import { Task } from './entities/task.entity';
+import { TodoModule } from './todo/todo.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true, }),
     TypeOrmModule.forRoot({
       type: "postgres",
       host: process.env.DATABASE_HOST,
@@ -23,6 +25,8 @@ import { Task } from './entities/task.entity';
       synchronize: true // set to false in prod env!
     }),
     AuthModule,
+    TodoModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
