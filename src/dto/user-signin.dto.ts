@@ -7,16 +7,8 @@ export class SignInDto {
     @MinLength(3, { message: 'Username must be at least 3 characters long' })
     @MaxLength(20, { message: 'Username cannot exceed 20 characters' })
     @IsAlphanumeric()
-    @IsLowercase({ message: 'Username must be in lower case' })
     username: string;
 
     @IsNotEmpty()
-    @IsStrongPassword({
-        minLength: 8,
-        minLowercase: 1,
-        minUppercase: 1,
-        minNumbers: 1,
-        minSymbols: 1,
-    })
     password: string;
 }
