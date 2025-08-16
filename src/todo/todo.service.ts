@@ -15,7 +15,7 @@ export class TodoService {
 
     async createList(userId: number, newListDto: NewTodoDto) {
         try {
-            const foundUser = await this.userService.findUser(userId);
+            const foundUser = await this.userService.findUserId(userId);
             const newList = this.todoRepository.create({ title: newListDto.title, user: foundUser });
             const {user, ...restOfNewList} = await this.todoRepository.save(newList);
             return restOfNewList;
@@ -26,8 +26,8 @@ export class TodoService {
 
     async getAll(userId: number) {
         try {
-            const foundUser = await this.userService.findUser(userId);
-            const allLists = await this.todoRepository.findBy({ user: foundUser });
+            const foundUser = await this.userService.findUserId(userId);
+            const allLists = await this.todoRepository.find({ where: { user: {id: userId} } });
             return allLists;
         } catch(err) {
             throw err;
@@ -36,7 +36,7 @@ export class TodoService {
 
     async getList(userId: number, todoId: number) {
         try {
-            const foundUser = await this.userService.findUser(userId);
+            const foundUser = await this.userService.findUserId(userId);
             const todoList = await this.todoRepository.findOneBy({ id: todoId, user: foundUser });
             if(!todoList) {
                 throw new NotFoundException('Todo list not found');
@@ -49,7 +49,7 @@ export class TodoService {
 
     async updateList(userId: number, todoId: number, updateListDto: UpdateTodoDto) {
         try {
-            const foundUser = await this.userService.findUser(userId);
+            const foundUser = await this.userService.findUserId(userId);
             const todoList = await this.todoRepository.findOneBy({ id: todoId, user: foundUser });
             if(!todoList) {
                 throw new NotFoundException('Todo list not found');
@@ -64,7 +64,7 @@ export class TodoService {
 
     async deleteList(userId: number, todoId: number) {
         try {
-            const foundUser = await this.userService.findUser(userId);
+            const foundUser = await this.userService.findUserId(userId);
             const todoList = await this.todoRepository.findOneBy({ id: todoId, user: foundUser });
             if(!todoList) {
                 throw new NotFoundException('Todo list not found');

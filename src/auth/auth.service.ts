@@ -1,31 +1,26 @@
 import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
 import { SignInDto } from "src/dto/user-signin.dto";
 import { SignUpDto } from "src/dto/user-signup.dto";
-import { User } from "src/entities/user.entity"; //import user service instead?
-import { Repository } from "typeorm";
 import { compare, genSalt, hash } from 'bcrypt';
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { ActiveUserData } from "./active-user-data.interface";
+import { UserService } from "src/user/user.service";
 
 @Injectable()
 export class AuthService {
     constructor(
-        @InjectRepository(User) private readonly userRepository: Repository<User>,
+        private readonly userService: UserService,
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
     ){}
 
     async signUp(signUpDto: SignUpDto) {
         try {
-            const user = new User();
-            user.username = signUpDto.username;
-
             const salt: string = await genSalt();
-            user.password = await hash(signUpDto.password, salt);
-
-            await this.userRepository.save(user);
+            const hashedPassword = await hash(signUpDto.password, salt);
+            await this.userService.createUser(signUpDto.username, hashedPassword);
+            return "Successful";
         } catch(err) {
             const pgUniqueErrorViolationCode = '23505';
             if (err.code === pgUniqueErrorViolationCode) {
@@ -37,7 +32,7 @@ export class AuthService {
 
     async signIn(signInDto: SignInDto) {
         try {
-            const user = await this.userRepository.findOneBy({ username: signInDto.username, });
+            const user = await this.userService.findUsername(signInDto.username);
             if (!user) {
                 throw new UnauthorizedException('Invalid username or password');
             }
