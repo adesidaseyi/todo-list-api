@@ -4,7 +4,9 @@ import { TodoService } from "./todo.service";
 import { ActiveUser } from "src/auth/active-user.decorator";
 import { NewTodoDto } from "src/dto/new-todo.dto";
 import { UpdateTodoDto } from "src/dto/update-todo.dto";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
+@ApiBearerAuth()
 @UseGuards(AuthGuard)
 @Controller('todo')
 export class TodoController {
