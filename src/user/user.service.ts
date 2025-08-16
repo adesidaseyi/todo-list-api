@@ -27,7 +27,7 @@ export class UserService {
     async createUser(username: string, password: string) {
         try {
             const newUser = this.userRepository.create({ username: username, password: password, });
-            this.userRepository.save(newUser);
+            await this.userRepository.save(newUser);
         } catch(err) {
             throw err;
         }

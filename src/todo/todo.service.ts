@@ -26,8 +26,7 @@ export class TodoService {
 
     async getAll(userId: number) {
         try {
-            const foundUser = await this.userService.findUserId(userId);
-            const allLists = await this.todoRepository.find({ where: { user: {id: userId} } });
+            const allLists = await this.todoRepository.findBy({ user: {id: userId} });
             return allLists;
         } catch(err) {
             throw err;
@@ -36,8 +35,7 @@ export class TodoService {
 
     async getList(userId: number, todoId: number) {
         try {
-            const foundUser = await this.userService.findUserId(userId);
-            const todoList = await this.todoRepository.findOneBy({ id: todoId, user: foundUser });
+            const todoList = await this.todoRepository.findOneBy({ id: todoId, user: { id: userId } });
             if(!todoList) {
                 throw new NotFoundException('Todo list not found');
             }
@@ -49,14 +47,12 @@ export class TodoService {
 
     async updateList(userId: number, todoId: number, updateListDto: UpdateTodoDto) {
         try {
-            const foundUser = await this.userService.findUserId(userId);
-            const todoList = await this.todoRepository.findOneBy({ id: todoId, user: foundUser });
+            const todoList = await this.todoRepository.findOneBy({ id: todoId, user: { id: userId } });
             if(!todoList) {
                 throw new NotFoundException('Todo list not found');
             }
-            todoList.title = updateListDto.title;
-            return await this.todoRepository.save(todoList);
-            //return this.todoRepository.update({ id: todoId, user: user }, {...newListDto});
+            const updatedTodoList: Todo = {...todoList, ...updateListDto};
+            return await this.todoRepository.save(updatedTodoList);
         } catch(err) {
             throw err;
         }
@@ -64,8 +60,7 @@ export class TodoService {
 
     async deleteList(userId: number, todoId: number) {
         try {
-            const foundUser = await this.userService.findUserId(userId);
-            const todoList = await this.todoRepository.findOneBy({ id: todoId, user: foundUser });
+            const todoList = await this.todoRepository.findOneBy({ id: todoId, user: { id: userId } });
             if(!todoList) {
                 throw new NotFoundException('Todo list not found');
             }
