@@ -6,6 +6,7 @@ import { Task } from "src/entities/task.entity";
 import { TodoService } from "src/todo/todo.service";
 import { UserService } from "src/user/user.service";
 import { Repository } from "typeorm";
+import { ColouredTask, StatusColour } from "./task.interface";
 
 @Injectable()
 export class TaskService {
@@ -15,6 +16,21 @@ export class TaskService {
         private readonly todoService: TodoService,
         private readonly userService: UserService,
     ) {}
+
+    addStatusColour(task: Task): ColouredTask {
+        const colouredTask: ColouredTask = {...task};
+        const timeDiff = task.dueDate.getTime() - task.dateCreated.getTime();
+        if (timeDiff <= 10800000) { // 3 hrs -> ms
+            colouredTask.statusColour = StatusColour.RED;
+        }
+        else if (timeDiff <= 86400000) { // 24 hrs -> ms
+            colouredTask.statusColour = StatusColour.GREEN;
+        }
+        else{
+            colouredTask.statusColour = StatusColour.AMBER;
+        }
+        return colouredTask;
+    }
 
     async createTask(userId: number, newTaskDto: NewTaskDto) {
         try {           
@@ -30,10 +46,11 @@ export class TaskService {
     }
 
     async getAll(userId: number) {
-        return await this.taskRepository.find({ 
+        const tasks = await this.taskRepository.find({ 
             where: { user: { id: userId } }, 
             relations:{ todo: true } 
         });
+        return tasks.map((task) => { return this.addStatusColour(task) });
     }
 
     async getTask(userId: number, taskId: number) {
@@ -45,7 +62,7 @@ export class TaskService {
             if(!task) {
                 throw new NotFoundException('Task not found');
             }
-            return task;
+            return this.addStatusColour(task);
         } catch(err) {
             throw err;
         }
