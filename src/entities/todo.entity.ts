@@ -13,9 +13,9 @@ export class Todo {
     @CreateDateColumn()
     dateCreated: Date;
 
-    @OneToMany(() => Task, (task) => task.todo)
+    @OneToMany(() => Task, (task) => task.todo,)
     tasks: Task[];
     
-    @ManyToOne(() => User, (user) => user.todoLists)
+    @ManyToOne(() => User, (user) => user.todoLists, { nullable: false })
     user: User;
 }

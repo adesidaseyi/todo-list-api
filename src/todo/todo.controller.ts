@@ -23,18 +23,18 @@ export class TodoController {
     }
 
     @Get(':id')
-    getList(@ActiveUser('sub') userId: number, @Param('id') todoId: string) {
-        return this.todoService.getList(userId, +todoId);
+    getList(@ActiveUser('sub') userId: number, @Param('id') todoId: number) {
+        return this.todoService.getList(userId, todoId);
     }
 
     @Patch(':id')
-    updateList(@ActiveUser('sub') userId: number, @Param('id') todoId: string, @Body() updateListDto: UpdateTodoDto) {
-        return this.todoService.updateList(userId, +todoId, updateListDto);
+    updateList(@ActiveUser('sub') userId: number, @Param('id') todoId: number, @Body() updateListDto: UpdateTodoDto) {
+        return this.todoService.updateList(userId, todoId, updateListDto);
     }
 
     @Delete(':id')
-    deleteList(@ActiveUser('sub') userId: number, @Param('id') todoId: string) {
-        return this.todoService.deleteList(userId, +todoId);
+    deleteList(@ActiveUser('sub') userId: number, @Param('id') todoId: number) {
+        return this.todoService.deleteList(userId, todoId);
     }
 
 }

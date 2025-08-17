@@ -25,12 +25,8 @@ export class TodoService {
     }
 
     async getAll(userId: number) {
-        try {
-            const allLists = await this.todoRepository.findBy({ user: {id: userId} });
-            return allLists;
-        } catch(err) {
-            throw err;
-        }
+        const allLists = await this.todoRepository.findBy({ user: {id: userId} });
+        return allLists;
     }
 
     async getList(userId: number, todoId: number) {
@@ -47,12 +43,13 @@ export class TodoService {
 
     async updateList(userId: number, todoId: number, updateListDto: UpdateTodoDto) {
         try {
-            const todoList = await this.todoRepository.findOneBy({ id: todoId, user: { id: userId } });
-            if(!todoList) {
-                throw new NotFoundException('Todo list not found');
+            const todoList = await this.getList(userId, todoId);
+            for (const key in updateListDto) {
+                if (updateListDto[key] !== undefined) {
+                    todoList[key] = updateListDto[key];
+                }
             }
-            const updatedTodoList: Todo = {...todoList, ...updateListDto};
-            return await this.todoRepository.save(updatedTodoList);
+            return await this.todoRepository.save(todoList);
         } catch(err) {
             throw err;
         }
@@ -60,10 +57,7 @@ export class TodoService {
 
     async deleteList(userId: number, todoId: number) {
         try {
-            const todoList = await this.todoRepository.findOneBy({ id: todoId, user: { id: userId } });
-            if(!todoList) {
-                throw new NotFoundException('Todo list not found');
-            }
+            const todoList = await this.getList(userId, todoId);
             return await this.todoRepository.remove(todoList);
         } catch(err) {
             throw err;
