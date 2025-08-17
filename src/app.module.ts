@@ -9,6 +9,7 @@ import { Todo } from './entities/todo.entity';
 import { Task } from './entities/task.entity';
 import { TodoModule } from './todo/todo.module';
 import { UserModule } from './user/user.module';
+import { TaskModule } from './task/task.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { UserModule } from './user/user.module';
     }),
     AuthModule,
     TodoModule,
+    TaskModule,
     UserModule,
   ],
   controllers: [AppController],

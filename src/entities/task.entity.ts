@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 import { Todo } from "./todo.entity";
 
@@ -31,9 +31,9 @@ export class Task {
     @DeleteDateColumn()
     deletedAt: Date;
 
-    @ManyToMany(() => Todo, (todo) => todo.tasks)
-    todo: Todo;
+    @ManyToOne(() => Todo, (todo) => todo.tasks, { nullable: false, onDelete: "CASCADE" })
+    todo?: Todo;
     
-    @ManyToOne(() => User, (user) => user.tasks)
-    user: User;
+    @ManyToOne(() => User, (user) => user.tasks, { nullable: false })
+    user?: User;
 }
