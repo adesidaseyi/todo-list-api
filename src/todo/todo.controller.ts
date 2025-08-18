@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "src/auth/auth.guard";
 import { TodoService } from "./todo.service";
 import { ActiveUser } from "src/auth/active-user.decorator";
 import { NewTodoDto } from "src/dto/new-todo.dto";
 import { UpdateTodoDto } from "src/dto/update-todo.dto";
 import { ApiBearerAuth } from "@nestjs/swagger";
+import { QueryDto } from "src/dto/query.dto";
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
@@ -17,9 +18,9 @@ export class TodoController {
         return this.todoService.createList(userId, newListDto);
     }
 
-    @Get('all') // add pagination and sorting parameters
-    getAll(@ActiveUser('sub') userId: number) {
-        return this.todoService.getAll(userId);
+    @Get('all')
+    getAll(@ActiveUser('sub') userId: number, @Query() queryDto: QueryDto) {
+        return this.todoService.getAll(userId, queryDto);
     }
 
     @Get(':id')

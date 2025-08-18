@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { NewTodoDto } from "src/dto/new-todo.dto";
+import { QueryDto } from "src/dto/query.dto";
 import { UpdateTodoDto } from "src/dto/update-todo.dto";
 import { Todo } from "src/entities/todo.entity";
 import { UserService } from "src/user/user.service";
@@ -24,8 +25,14 @@ export class TodoService {
         }
     }
 
-    async getAll(userId: number) {
-        const allLists = await this.todoRepository.findBy({ user: {id: userId} });
+    async getAll(userId: number, queryDto: QueryDto) {
+        const { limit, offset, date_created_order } = queryDto;
+        const allLists = await this.todoRepository.find({
+            where: { user: {id: userId} },
+            skip: offset,
+            take: limit,
+            order: { dateCreated: date_created_order }
+        });
         return allLists;
     }
 

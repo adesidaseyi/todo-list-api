@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { NewTaskDto } from "src/dto/new-task.dto";
 import { UpdateTaskDto } from "src/dto/update-task.dto";
@@ -7,6 +7,7 @@ import { TodoService } from "src/todo/todo.service";
 import { UserService } from "src/user/user.service";
 import { Repository } from "typeorm";
 import { ColouredTask, StatusColour } from "./task.interface";
+import { QueryDto } from "src/dto/query.dto";
 
 @Injectable()
 export class TaskService {
@@ -45,10 +46,14 @@ export class TaskService {
         }
     }
 
-    async getAll(userId: number) {
+    async getAll(userId: number, queryDto: QueryDto) {
+       const { limit, offset, date_created_order, due_date_order } = queryDto;
         const tasks = await this.taskRepository.find({ 
             where: { user: { id: userId } }, 
-            relations:{ todo: true } 
+            relations:{ todo: true },
+            skip: offset,
+            take: limit,
+            order: { dateCreated: date_created_order, dueDate: due_date_order, }
         });
         return tasks.map((task) => { return this.addStatusColour(task) });
     }

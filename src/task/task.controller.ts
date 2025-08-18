@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth } from "@nestjs/swagger";
 import { AuthGuard } from "src/auth/auth.guard";
 import { TaskService } from "./task.service";
 import { ActiveUser } from "src/auth/active-user.decorator";
 import { NewTaskDto } from "src/dto/new-task.dto";
 import { UpdateTaskDto } from "src/dto/update-task.dto";
+import { QueryDto } from "src/dto/query.dto";
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
@@ -17,9 +18,9 @@ export class TaskController {
         return this.taskService.createTask(userId, newTaskDto);
     }
 
-    @Get('all') // add pagination and sorting parameters
-    getAll(@ActiveUser('sub') userId: number) {
-        return this.taskService.getAll(userId);
+    @Get('all')
+    getAll(@ActiveUser('sub') userId: number, @Query() queryDto: QueryDto) {
+        return this.taskService.getAll(userId, queryDto);
     }
 
     @Get(':id')
